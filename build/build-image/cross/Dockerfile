@@ -29,6 +29,7 @@ ENV KUBE_CROSSPLATFORMS \
   linux/arm linux/arm64 \
   linux/ppc64le \
   linux/s390x \
+  linux/mips64le \
   darwin/amd64 darwin/386 \
   windows/amd64 windows/386
 
@@ -48,6 +49,12 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu xenial main universe" > /etc/apt/
   && apt-get update \
   && apt-get install -y build-essential \
   && for platform in ${KUBE_DYNAMIC_CROSSPLATFORMS}; do apt-get install -y crossbuild-essential-${platform}; done \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN dpkg --add-architecture mips64el \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+        gcc-mips64el-linux-gnuabi64 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN PROTOBUF_VERSION=3.0.2; ZIPNAME="protoc-${PROTOBUF_VERSION}-linux-x86_64.zip"; \
